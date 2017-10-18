@@ -1,6 +1,10 @@
 import com.mashape.unirest.http.Unirest;
 import com.mashape.unirest.http.HttpResponse;
 import com.mashape.unirest.http.JsonNode;
+import com.mashape.unirest.http.ObjectMapper;
+import com.mashape.unirest.http.exceptions.UnirestException;
+import com.fasterxml.jackson.core.JsonProcessingException;
+import java.io.IOException;
 
 public class RestClient implements IDogClient
 {
@@ -12,7 +16,7 @@ public class RestClient implements IDogClient
 
     public void RestClient() 
     {
-        Unirest.setObjectMapper(new ObjectMapper() {
+        com.mashape.unirest.http.Unirest.setObjectMapper(new ObjectMapper() {
             private com.fasterxml.jackson.databind.ObjectMapper jacksonObjectMapper
                         = new com.fasterxml.jackson.databind.ObjectMapper();
         
@@ -34,13 +38,22 @@ public class RestClient implements IDogClient
         });
     }
 
-    public DogInfo GetSubBreed (String breedName, String subBreedName)
+    public DogInfo GetSubBreed (String breedName, String subBreedName) throws Exception
     {
+        DogInfo info = new DogInfo();
+        try { 
         HttpResponse<DogInfo> dogInfo = Unirest.get("https://dog.ceo/api/breed/{breed}/{subBreed}/images/random")
                                         .routeParam("breed", breedName)
                                         .routeParam("subBreed", subBreedName)
                                         .asObject(DogInfo.class);
         System.out.println(dogInfo.getBody());
+        return dogInfo.getBody();
     }
+    catch (Exception e){}
+
     
+    
+    return info;
+}
+
 }
